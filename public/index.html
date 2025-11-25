@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AllDownloader — Lana Premium</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg1:#020204;
+      --bg2:#0b0f1a;
+      --card:rgba(255,255,255,0.03);
+      --accent1:#ffb86b;
+      --accent2:#ff6bcb;
+      --gold:#FFD166;
+      --muted:rgba(255,255,255,0.65);
+    }
+
+    *{box-sizing:border-box}
+    html,body{
+      margin:0;
+      font-family:'Poppins',Arial;
+      background:linear-gradient(135deg,var(--bg1),var(--bg2));
+      color:#fff;
+      -webkit-font-smoothing:antialiased;
+    }
+
+    .container{max-width:1100px;margin:40px auto;padding:20px}
+
+    header{
+      display:flex;align-items:center;gap:18px;
+    }
+
+    .brand{
+      width:80px;height:80px;border-radius:20px;
+      background:linear-gradient(135deg,var(--accent1),var(--accent2));
+      display:flex;align-items:center;justify-content:center;
+      color:#111;font-size:26px;font-weight:900;
+      box-shadow:0 12px 40px rgba(255,107,203,0.25);
+    }
+
+    h1{margin:0;font-size:26px}
+    .subtitle{margin-top:6px;color:var(--muted);font-size:13px}
+
+    .owner{
+      margin-left:auto;text-align:right;font-size:13px;color:var(--muted);
+    }
+
+    .layout{
+      display:grid;grid-template-columns:1fr 360px;gap:25px;margin-top:25px;
+    }
+
+    .card{
+      background:var(--card);
+      padding:18px;border-radius:16px;
+      border:1px solid rgba(255,255,255,0.06);
+      box-shadow:0 8px 40px rgba(3,6,16,0.6);
+    }
+
+    input,select{
+      width:100%;padding:14px;border-radius:12px;
+      border:none;outline:none;font-size:14px;
+      background:rgba(255,255,255,0.06);color:#fff;
+      margin-bottom:12px;
+    }
+
+    .btn{
+      padding:12px 14px;border-radius:12px;border:none;
+      cursor:pointer;font-weight:700;transition:0.2s;
+    }
+
+    .btn-primary{
+      background:linear-gradient(90deg,var(--accent1),var(--accent2));
+      color:#111;
+    }
+
+    .btn-ghost{
+      background:transparent;color:var(--muted);
+      border:1px solid rgba(255,255,255,0.06);
+    }
+
+    .btn:hover{opacity:0.85}
+
+    .row{display:flex;gap:10px}
+
+    .preview{
+      background:rgba(255,255,255,0.02);
+      border-radius:12px;min-height:240px;display:flex;
+      align-items:center;justify-content:center;overflow:hidden
+    }
+
+    .preview video,.preview img{
+      max-width:100%;max-height:420px;border-radius:10px;
+      box-shadow:0 8px 25px rgba(0,0,0,0.5)
+    }
+
+    .small{font-size:13px;color:var(--muted)}
+
+    .result a{
+      display:block;padding:12px;
+      border-radius:10px;
+      margin-bottom:10px;
+      text-decoration:none;color:#fff;
+      background:linear-gradient(90deg,rgba(255,255,255,0.1),rgba(255,255,255,0.02));
+      font-weight:700
+    }
+
+    .loader{
+      border-radius:50%;width:32px;height:32px;
+      border:4px solid rgba(255,255,255,0.06);
+      border-top-color:var(--accent2);
+      animation:spin 1s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .history{max-height:350px;overflow:auto;margin-top:10px}
+    .item{
+      padding:10px;border-radius:10px;
+      background:rgba(255,255,255,0.03);margin-bottom:10px;
+      display:flex;justify-content:space-between;
+    }
+
+    @media(max-width:900px){
+      .layout{grid-template-columns:1fr}
+      header{flex-direction:column}
+      .owner{text-align:center;margin-left:0}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">AD</div>
+      <div>
+        <h1>AllDownloader <span style="color:var(--gold)">Premium</span></h1>
+        <div class="subtitle">Downloader TikTok • Instagram • Facebook • YouTube — Owner Lana</div>
+      </div>
+      <div class="owner">
+        Owner: <b>Lana</b><br>
+        All rights reserved.
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- LEFT -->
+      <main>
+        <div class="card">
+          <input id="url" placeholder="Tempel link TikTok / Instagram / Facebook / YouTube">
+
+          <div class="row">
+            <select id="platform">
+              <option value="auto">Auto Detect</option>
+              <option value="tiktok">TikTok</option>
+              <option value="instagram">Instagram</option>
+              <option value="facebook">Facebook</option>
+              <option value="youtube">YouTube</option>
+            </select>
+            <button class="btn btn-primary" id="btnDownload">Download</button>
+          </div>
+
+          <div class="row" style="margin-top:10px">
+            <button class="btn btn-ghost" id="btnPreview">Preview</button>
+            <button class="btn btn-ghost" id="btnClear">Clear</button>
+            <button class="btn btn-ghost" id="btnCopy">Copy</button>
+          </div>
+
+          <div class="small" id="meta" style="margin-top:12px">Status: Ready</div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <div id="preview" class="preview">Preview akan muncul di sini</div>
+          <div id="previewMeta" class="small" style="margin-top:10px"></div>
+        </div>
+      </main>
+
+      <!-- RIGHT -->
+      <aside>
+        <div class="card">
+          <h3 style="margin-top:0;margin-bottom:8px">Hasil & Resolusi</h3>
+          <div id="results" class="small">Belum ada hasil.</div>
+        </div>
+
+        <div class="card" style="margin-top:20px">
+          <h3 style="margin:0 0 8px 0">History</h3>
+          <div id="history" class="history"></div>
+
+          <div class="row" style="margin-top:10px">
+            <button class="btn btn-ghost" id="btnClearHistory">Hapus</button>
+            <button class="btn btn-ghost" id="btnExport">Export</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    const el = x => document.getElementById(x);
+    const LS = "all_down_hist_v1";
+
+    function detectPlatform(url){
+      url = url.toLowerCase();
+      if(url.includes("tiktok")) return "tiktok";
+      if(url.includes("instagram")||url.includes("instagr")) return "instagram";
+      if(url.includes("facebook")||url.includes("fb.watch")) return "facebook";
+      if(url.includes("youtube")||url.includes("youtu.be")) return "youtube";
+      return "unknown";
+    }
+
+    function saveHistory(item){
+      const h = JSON.parse(localStorage.getItem(LS)||"[]");
+      h.unshift(item);
+      if(h.length > 60) h.pop();
+      localStorage.setItem(LS, JSON.stringify(h));
+      renderHistory();
+    }
+
+    function renderHistory(){
+      const h = JSON.parse(localStorage.getItem(LS)||"[]");
+      const box = el("history");
+      box.innerHTML = "";
+
+      if(!h.length){
+        box.innerHTML = `<div class='small'>Belum ada history.</div>`;
+        return;
+      }
+
+      h.forEach((x,i)=>{
+        const d = document.createElement("div");
+        d.className = "item";
+        d.innerHTML = `
+          <div>
+            <b>${x.platform}</b><br>
+            <span class="small">${x.url}</span>
+          </div>
+          <div style="text-align:right">
+            <div class="small">${new Date(x.t).toLocaleString()}</div>
+            <button class="btn btn-ghost" onclick="loadEntry(${i})">Load</button>
+          </div>
+        `;
+        box.appendChild(d);
+      });
+    }
+
+    function loadEntry(i){
+      const h = JSON.parse(localStorage.getItem(LS)||"[]");
+      if(!h[i]) return;
+      el("url").value = h[i].url;
+      el("platform").value = h[i].platform;
+    }
+
+    el("btnClearHistory").onclick = ()=>{
+      localStorage.removeItem(LS);renderHistory();
+    };
+
+    el("btnExport").onclick = ()=>{
+      const d = localStorage.getItem(LS)||"[]";
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob([d],{type:"application/json"}));
+      a.download = "all_downloader_history.json";
+      a.click();
+    };
+
+    el("btnCopy").onclick = ()=>{
+      navigator.clipboard.writeText(el("url").value);
+      alert("Copied!");
+    };
+
+    el("btnClear").onclick = ()=>{
+      el("url").value="";
+      el("results").innerHTML = "Belum ada hasil.";
+      el("preview").innerHTML = "Preview akan muncul di sini";
+      el("previewMeta").innerHTML = "";
+    };
+
+    function renderPreview(service,data){
+      const box = el("preview");
+      box.innerHTML = "";
+      el("previewMeta").innerHTML = "";
+
+      try{
+        if(service==="tiktok" && data.thumbnail){
+          let img = document.createElement("img");
+          img.src = data.thumbnail;
+          box.appendChild(img);
+          return;
+        }
+
+        if(service==="facebook" && data.thumbnail){
+          let img = document.createElement("img");
+          img.src = data.thumbnail;
+          box.appendChild(img);
+          return;
+        }
+
+        if(service==="youtube" && data.thumbnail){
+          let img = document.createElement("img");
+          img.src = data.thumbnail;
+          box.appendChild(img);
+          return;
+        }
+
+        if(service==="instagram" && data.thumbnail){
+          let img = document.createElement("img");
+          img.src = data.thumbnail;
+          box.appendChild(img);
+          return;
+        }
+      }catch{}
+
+      box.innerHTML = `<div class='small'>Preview tidak tersedia.</div>`;
+    }
+
+    function renderResult(service,data){
+      const box = el("results");
+      box.innerHTML="";
+
+      if(!data || !data.formats){
+        box.innerHTML = `<div class='small'>Tidak ada format tersedia</div>`;
+        return;
+      }
+
+      data.formats.forEach(f=>{
+        if(!f.format_id) return;
+        let q = f.quality || f.format_note || "";
+        let ext = f.ext || "";
+        let btn = document.createElement("a");
+        btn.textContent = `${q} (${ext})`;
+        btn.href = `/api/getformat?url=${encodeURIComponent(data.original_url)}&format_id=${f.format_id}`;
+        box.appendChild(btn);
+      });
+    }
+
+    async function extract(url){
+      const res = await fetch(`/api/extract?url=${encodeURIComponent(url)}`);
+      return await res.json();
+    }
+
+    async function handle(preview){
+      const url = el("url").value.trim();
+      if(!url) return alert("Masukkan link dulu");
+
+      let service = el("platform").value;
+      if(service==="auto") service = detectPlatform(url);
+
+      saveHistory({url,platform:service,t:Date.now()});
+
+      el("results").innerHTML = `Loading <div class="loader" style="display:inline-block;vertical-align:middle"></div>`;
+
+      const res = await extract(url);
+      if(!res.ok){
+        el("results").innerHTML = `<div class='small'>Gagal mengambil data.</div>`;
+        return;
+      }
+
+      res.data.original_url = url;
+      renderResult(service,res.data);
+
+      if(preview) renderPreview(service,res.data);
+    }
+
+    el("btnDownload").onclick = ()=>handle(false);
+    el("btnPreview").onclick  = ()=>handle(true);
+
+    el("url").addEventListener("paste",()=>{
+      setTimeout(()=>{
+        let u = el("url").value;
+        if(el("platform").value === "auto"){
+          let p = detectPlatform(u);
+          if(p!=="unknown") el("platform").value = p;
+        }
+      },50);
+    });
+
+    renderHistory();
+  </script>
+
+</body>
+</html>
