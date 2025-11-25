@@ -1,33 +1,29 @@
+import fetch from "node-fetch";
+
 export default async function handler(req, res) {
   const url = req.query.url;
   if (!url) return res.status(400).json({ ok:false, msg:"No URL provided" });
 
   const lower = url.toLowerCase();
 
-  // ==============================
-  // 1) DETECT PLATFORM
-  // ==============================
+  // Detect platform
   let platform = "unknown";
   if (lower.includes("tiktok.com")) platform = "tiktok";
   else if (lower.includes("instagram.com")) platform = "instagram";
-  else if (lower.includes("facebook.com") || lower.includes("fb.watch")) platform = "facebook";
-  else if (lower.includes("youtu.be") || lower.includes("youtube.com")) platform = "youtube";
+  else if ((lower.includes("facebook.com")) || lower.includes("fb.watch")) platform = "facebook";
+  else if (lower.includes("youtube.com") || lower.includes("youtu.be")) platform = "youtube";
 
-  // ==============================
-  // 2) HANDLE PLATFORM
-  // ==============================
-
-  // ==== TIKTOK ====
+  // ========== TIKTOK ==========
   if (platform === "tiktok") {
     const api = `https://www.tikwm.com/api/?url=${encodeURIComponent(url)}`;
     const r = await fetch(api);
     const j = await r.json();
 
-    if (!j || !j.data) return res.json({ ok:false });
+    if (!j?.data) return res.json({ ok:false });
 
     return res.json({
       ok: true,
-      platform: "tiktok",
+      platform,
       title: j.data.title,
       thumbnail: j.data.cover,
       formats: [
@@ -38,28 +34,25 @@ export default async function handler(req, res) {
     });
   }
 
-  // ==== INSTAGRAM ====
+  // ========== INSTAGRAM ==========  
   if (platform === "instagram") {
     const api = `https://instagramdownloader.io/api/v1/instagram?url=${encodeURIComponent(url)}`;
     const r = await fetch(api);
     const j = await r.json();
 
-    if (!j || !j.download_url) return res.json({ ok:false });
+    if (!j?.download_url) return res.json({ ok:false });
 
     return res.json({
       ok: true,
-      platform: "instagram",
+      platform,
       title: j.title || "Instagram Media",
-      thumbnail: j.thumbnail || null,
-      formats: [
-        { quality: "default", url: j.download_url }
-      ]
+      thumbnail: j.thumbnail,
+      formats: [{ quality:"default", url: j.download_url }]
     });
   }
 
-  // ==== FACEBOOK ====
+  // ========== FACEBOOK ==========  
   if (platform === "facebook") {
-
     const r = await fetch("https://snapsave.app/api/ajaxSearch", {
       method: "POST",
       headers: {
@@ -69,26 +62,23 @@ export default async function handler(req, res) {
     });
 
     const j = await r.json();
-
-    if (!j || !j.data) return res.json({ ok:false });
+    if (!j?.data) return res.json({ ok:false });
 
     const formats = [];
-
     if (j.data[0]?.url) formats.push({ quality: "hd", url: j.data[0].url });
     if (j.data[1]?.url) formats.push({ quality: "sd", url: j.data[1].url });
 
     return res.json({
       ok: true,
-      platform: "facebook",
-      title: j.title || "Facebook Video",
-      thumbnail: j.thumbnail || null,
+      platform,
+      title: j.title,
+      thumbnail: j.thumbnail,
       formats
     });
   }
 
-  // ==== YOUTUBE ====
+  // ========== YOUTUBE ==========  
   if (platform === "youtube") {
-
     const r = await fetch("https://yt1s.com/api/ajaxSearch/index", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -96,11 +86,35 @@ export default async function handler(req, res) {
     });
 
     const j = await r.json();
-
-    if (!j || !j.links) return res.json({ ok:false });
+    if (!j?.links) return res.json({ ok:false });
 
     const formats = [];
 
+    for (const key in j.links.mp4) {
+      formats.push({
+        quality: j.links.mp4[key].q,
+        url: j.links.mp4[key].k
+      });
+    }
+
+    for (const key in j.links.mp3) {
+      formats.push({
+        quality: j.links.mp3[key].q,
+        url: j.links.mp3[key].k
+      });
+    }
+
+    return res.json({
+      ok: true,
+      platform,
+      title: j.title,
+      thumbnail: j.thumb,
+      formats
+    });
+  }
+
+  return res.json({ ok:false, msg:"Platform not supported" });
+}
     // video downloads
     for (const key in j.links.mp4) {
       formats.push({
