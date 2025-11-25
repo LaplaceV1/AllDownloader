@@ -1,0 +1,13 @@
+{
+  "name": "alldownloader",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "youtube-dl-exec": "^3.0.0",
+    "express": "^4.18.2"
+  }
+}
