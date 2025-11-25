@@ -1,11 +1,9 @@
-// api/extract.js
-import { execFile } from "child_process";
-import ytDlpPath from "yt-dlp-static";
-import path from "path";
+const { execFile } = require("child_process");
+const { path: ytDlpPath } = require("yt-dlp-static");
 
-export default function handler(req, res) {
+module.exports = async (req, res) => {
   const url = req.query.url;
-  if (!url) return res.status(400).json({ ok:false, msg:"URL missing" });
+  if (!url) return res.status(400).json({ ok: false, msg: "URL missing" });
 
   execFile(
     ytDlpPath,
@@ -16,10 +14,10 @@ export default function handler(req, res) {
       "--skip-download",
       url
     ],
-    { maxBuffer: 1024 * 1024 * 10 },
+    { maxBuffer: 1024 * 1024 * 20 },
     (err, stdout) => {
       if (err) {
-        return res.status(500).json({ ok:false, msg: err.message });
+        return res.status(500).json({ ok: false, msg: err.message });
       }
 
       try {
@@ -28,23 +26,23 @@ export default function handler(req, res) {
         res.json({
           ok: true,
           data: {
-            title: info.title,
             original_url: url,
+            title: info.title,
             thumbnail: info.thumbnail,
-            duration: info.duration,
             uploader: info.uploader,
-            formats: info.formats.map(f => ({
+            duration: info.duration,
+            formats: (info.formats || []).map(f => ({
               format_id: f.format_id,
               quality: f.format_note || f.qualityLabel || "",
-              ext: f.ext,
+              ext: f.ext || "",
               filesize: f.filesize || null
             }))
           }
         });
 
       } catch (e) {
-        res.status(500).json({ ok:false, msg:"JSON parse error" });
+        res.status(500).json({ ok: false, msg: "JSON parse fail" });
       }
     }
   );
-}
+};
