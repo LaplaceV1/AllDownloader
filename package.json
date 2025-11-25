@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "yt-dlp-static": "^1.0.3",
-    "child_process": "1.0.2"
+    "yt-dlp-static": "1.0.3"
   }
 }
